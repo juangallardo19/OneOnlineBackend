@@ -181,6 +181,29 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle UserAlreadyExistsException
+     *
+     * HTTP Status: 409 CONFLICT
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(
+            UserAlreadyExistsException ex,
+            WebRequest request) {
+
+        log.warn("User already exists: {}", ex.getMessage());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    /**
      * Handle Spring Security AuthenticationException
      *
      * HTTP Status: 401 UNAUTHORIZED
