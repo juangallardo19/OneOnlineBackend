@@ -76,8 +76,8 @@ public interface GlobalRankingRepository extends JpaRepository<GlobalRanking, Lo
      *
      * @return List of top 100 players
      */
-    @Query("SELECT gr FROM GlobalRanking gr ORDER BY gr.points DESC, gr.winRate DESC, gr.totalWins DESC")
-    List<GlobalRanking> findTop100();
+    @Query(value = "SELECT * FROM global_ranking ORDER BY points DESC, win_rate DESC, total_wins DESC LIMIT 100", nativeQuery = true)
+    List<GlobalRanking> findTop100ByOrderByPointsDesc();
 
     /**
      * Find rankings by rank position range

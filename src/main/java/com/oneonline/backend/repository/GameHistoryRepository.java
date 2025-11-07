@@ -32,27 +32,16 @@ import java.util.Optional;
 public interface GameHistoryRepository extends JpaRepository<GameHistory, Long> {
 
     /**
-     * Find game by room code
+     * Find all games by room code
      *
      * Used for:
-     * - Game replay
+     * - Room history
      * - Statistics for a specific room
-     *
-     * @param roomCode 6-character room code
-     * @return Optional<GameHistory> if found, empty if not found
-     */
-    Optional<GameHistory> findByRoomCode(String roomCode);
-
-    /**
-     * Find all games by room code (multiple games in same room)
-     *
-     * Used for:
-     * - Room history (if rooms are reused)
      *
      * @param roomCode 6-character room code
      * @return List of game history records
      */
-    List<GameHistory> findAllByRoomCode(String roomCode);
+    List<GameHistory> findByRoomCode(String roomCode);
 
     /**
      * Find all games won by a specific user
@@ -67,6 +56,19 @@ public interface GameHistoryRepository extends JpaRepository<GameHistory, Long> 
     List<GameHistory> findByWinner(User winner);
 
     /**
+     * Find all games won by user ID (non-paginated)
+     *
+     * Used for:
+     * - Loading all wins for a user
+     * - Statistics calculations
+     *
+     * @param winnerId User ID
+     * @return List of games won by that user
+     */
+    @Query("SELECT gh FROM GameHistory gh WHERE gh.winner.id = :winnerId ORDER BY gh.endedAt DESC")
+    List<GameHistory> findByWinnerId(@Param("winnerId") Long winnerId);
+
+    /**
      * Find all games won by user ID with pagination
      *
      * Used for:
@@ -78,7 +80,7 @@ public interface GameHistoryRepository extends JpaRepository<GameHistory, Long> 
      * @return Page of game history
      */
     @Query("SELECT gh FROM GameHistory gh WHERE gh.winner.id = :winnerId ORDER BY gh.endedAt DESC")
-    Page<GameHistory> findByWinnerId(@Param("winnerId") Long winnerId, Pageable pageable);
+    Page<GameHistory> findByWinnerIdPaginated(@Param("winnerId") Long winnerId, Pageable pageable);
 
     /**
      * Find games where a specific player participated

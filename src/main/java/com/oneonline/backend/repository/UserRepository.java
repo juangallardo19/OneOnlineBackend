@@ -77,6 +77,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndAuthProvider(String email, User.AuthProvider authProvider);
 
     /**
+     * Find user by auth provider and provider ID
+     *
+     * Used for:
+     * - OAuth2 login (alternative to findByOauth2Id)
+     * - Provider-specific lookups
+     *
+     * @param provider Authentication provider (LOCAL, GOOGLE, GITHUB)
+     * @param providerId OAuth2 provider user ID
+     * @return Optional<User> if found, empty if not found
+     */
+    @Query("SELECT u FROM User u WHERE u.authProvider = :provider AND u.oauth2Id = :providerId")
+    Optional<User> findByAuthProviderAndProviderId(
+        @Param("provider") User.AuthProvider provider,
+        @Param("providerId") String providerId
+    );
+
+    /**
      * Check if email already exists
      *
      * Used for:

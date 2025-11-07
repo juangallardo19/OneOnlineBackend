@@ -3,6 +3,7 @@ package com.oneonline.backend.repository;
 import com.oneonline.backend.model.entity.PlayerStats;
 import com.oneonline.backend.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -78,6 +79,18 @@ public interface PlayerStatsRepository extends JpaRepository<PlayerStats, Long> 
     List<PlayerStats> findTopByTotalWins();
 
     /**
+     * Get top 10 players by total wins (leaderboard)
+     *
+     * Used for:
+     * - Main leaderboard display
+     * - Top winners showcase
+     *
+     * @return List of top 10 players ordered by total wins DESC
+     */
+    @Query(value = "SELECT * FROM player_stats ORDER BY total_wins DESC LIMIT 10", nativeQuery = true)
+    List<PlayerStats> findTop10ByOrderByTotalWinsDesc();
+
+    /**
      * Get top players by current streak
      *
      * Used for:
@@ -137,5 +150,43 @@ public interface PlayerStatsRepository extends JpaRepository<PlayerStats, Long> 
     List<PlayerStats> findPlayersWithHighWinRate(
         @Param("minWinRate") double minWinRate,
         @Param("minGames") int minGames
+    );
+
+    /**
+     * Update player stats after game completion
+     *
+     * Used for:
+     * - Batch updating stats after a game ends
+     *
+     * @param userId User ID to update
+     * @param totalGames New total games count
+     * @param totalWins New total wins count
+     * @param totalLosses New total losses count
+     * @param winRate New win rate
+     * @param currentStreak New current streak
+     * @param bestStreak New best streak
+     * @param totalPoints New total points
+     */
+    @Modifying
+    @Query("""
+        UPDATE PlayerStats ps
+        SET ps.totalGames = :totalGames,
+            ps.totalWins = :totalWins,
+            ps.totalLosses = :totalLosses,
+            ps.winRate = :winRate,
+            ps.currentStreak = :currentStreak,
+            ps.bestStreak = :bestStreak,
+            ps.totalPoints = :totalPoints
+        WHERE ps.user.id = :userId
+        """)
+    void updateStatsAfterGame(
+        @Param("userId") Long userId,
+        @Param("totalGames") Integer totalGames,
+        @Param("totalWins") Integer totalWins,
+        @Param("totalLosses") Integer totalLosses,
+        @Param("winRate") Double winRate,
+        @Param("currentStreak") Integer currentStreak,
+        @Param("bestStreak") Integer bestStreak,
+        @Param("totalPoints") Integer totalPoints
     );
 }
