@@ -57,3 +57,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// Disable plain JAR generation (only keep Spring Boot executable JAR)
+tasks.named('jar') {
+	enabled = false
+}
