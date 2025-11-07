@@ -5,4 +5,4 @@ nixPkgs = ['...', 'gradle', 'openjdk21']
 cmds = ['./gradlew clean build -x check -x test -Pproduction']
 
 [start]
-cmd = 'java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/*.jar'
+cmd = 'java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/*[!plain].jar'
