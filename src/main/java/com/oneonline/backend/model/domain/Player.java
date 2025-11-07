@@ -65,10 +65,10 @@ public class Player {
     private PlayerStatus status = PlayerStatus.WAITING;
 
     /**
-     * Whether player has called "UNO" when they have one card
+     * Whether player has called "ONE" when they have one card
      */
     @Builder.Default
-    private boolean calledUno = false;
+    private boolean calledOne = false;
 
     /**
      * Play a card from the player's hand
@@ -82,7 +82,7 @@ public class Player {
 
             // Reset UNO call if player no longer has 1 card
             if (hand.size() != 1) {
-                calledUno = false;
+                calledOne = false;
             }
 
             return true;
@@ -101,7 +101,7 @@ public class Player {
 
             // Reset UNO call when drawing cards
             if (hand.size() > 1) {
-                calledUno = false;
+                calledOne = false;
             }
         }
     }
@@ -111,7 +111,7 @@ public class Player {
      *
      * @return true if player has exactly 1 card
      */
-    public boolean hasUno() {
+    public boolean hasOne() {
         return hand.size() == 1;
     }
 
@@ -158,11 +158,11 @@ public class Player {
     }
 
     /**
-     * Call "UNO" when player has one card left
+     * Call "ONE" when player has one card left
      */
-    public void callUno() {
-        if (hasUno()) {
-            this.calledUno = true;
+    public void callOne() {
+        if (hasOne()) {
+            this.calledOne = true;
         }
     }
 
@@ -172,7 +172,7 @@ public class Player {
      * @return true if player has 1 card but didn't call UNO
      */
     public boolean shouldBePenalized() {
-        return hasUno() && !calledUno;
+        return hasOne() && !calledOne;
     }
 
     /**
@@ -180,7 +180,7 @@ public class Player {
      */
     public void resetHand() {
         hand.clear();
-        calledUno = false;
+        calledOne = false;
     }
 
     @Override

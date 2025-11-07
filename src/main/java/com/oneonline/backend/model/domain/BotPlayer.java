@@ -38,7 +38,7 @@ public class BotPlayer extends Player {
     /**
      * UNO calling success rate (90%)
      */
-    private static final double UNO_CALL_SUCCESS_RATE = 0.9;
+    private static final double ONE_CALL_SUCCESS_RATE = 0.9;
 
     @Builder
     public BotPlayer(String playerId, String nickname, boolean temporary, Player originalPlayer) {
@@ -153,17 +153,17 @@ public class BotPlayer extends Player {
     }
 
     /**
-     * Determine if bot should call "UNO" (90% success rate)
+     * Determine if bot should call "ONE" (90% success rate)
      *
-     * @return true if bot calls UNO (90% of the time)
+     * @return true if bot calls ONE (90% of the time)
      */
-    public boolean shouldCallUno() {
-        if (!hasUno()) {
+    public boolean shouldCallOne() {
+        if (!hasOne()) {
             return false;
         }
 
         // 90% chance of calling UNO
-        return RANDOM.nextDouble() < UNO_CALL_SUCCESS_RATE;
+        return RANDOM.nextDouble() < ONE_CALL_SUCCESS_RATE;
     }
 
     /**
@@ -180,8 +180,8 @@ public class BotPlayer extends Player {
             playCard(chosenCard);
 
             // Auto-call UNO if needed
-            if (shouldCallUno()) {
-                callUno();
+            if (shouldCallOne()) {
+                callOne();
             }
 
             return true;

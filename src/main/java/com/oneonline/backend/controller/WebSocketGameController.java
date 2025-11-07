@@ -184,7 +184,7 @@ public class WebSocketGameController {
             messagingTemplate.convertAndSend(
                     "/topic/game/" + sessionId,
                     Map.of(
-                            "type", "UNO_CALLED",
+                            "type", "ONE_CALLED",
                             "player", principal.getName(),
                             "timestamp", System.currentTimeMillis()
                     )

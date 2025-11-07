@@ -164,7 +164,7 @@ public class GameSession {
             return true;
         }
 
-        // Check UNO penalty
+        // Check ONE penalty
         if (currentPlayer.shouldBePenalized()) {
             // Penalize: draw 2 cards
             currentPlayer.drawCard(mainDeck.drawCard());

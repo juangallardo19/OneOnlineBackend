@@ -98,13 +98,13 @@ public class BotPlayerAdapter {
     /**
      * Adapt bot's UNO calling logic to standard interface.
      *
-     * Bots have probabilistic UNO calling (90% success rate).
+     * Bots have probabilistic ONE calling (90% success rate).
      * This method abstracts that into a simple boolean response.
      *
-     * @return true if bot calls UNO, false if bot forgets
+     * @return true if bot calls ONE, false if bot forgets
      */
-    public boolean declareUNO() {
-        return bot.shouldCallUno();
+    public boolean declareONE() {
+        return bot.shouldCallOne();
     }
 
     /**
@@ -158,9 +158,9 @@ public class BotPlayerAdapter {
                 // Color would be set on the wild card here
             }
 
-            // Bot decides whether to call UNO
-            if (bot.shouldCallUno()) {
-                bot.callUno();
+            // Bot decides whether to call ONE
+            if (bot.shouldCallOne()) {
+                bot.callOne();
             }
 
             return chosenCard;

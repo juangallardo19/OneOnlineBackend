@@ -5,7 +5,7 @@ import com.oneonline.backend.dto.response.GameStateResponse;
 import com.oneonline.backend.model.domain.*;
 import com.oneonline.backend.service.game.GameEngine;
 import com.oneonline.backend.service.game.GameManager;
-import com.oneonline.backend.service.game.UnoManager;
+import com.oneonline.backend.service.game.OneManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +21,16 @@ import java.util.stream.Collectors;
 /**
  * GameController - REST API for game operations
  *
- * Handles in-game actions like playing cards, drawing, calling UNO, etc.
+ * Handles in-game actions like playing cards, drawing, calling ONE, etc.
  *
  * ENDPOINTS:
  * - POST /api/game/{sessionId}/start - Start game session
  * - POST /api/game/{sessionId}/play - Play a card
  * - POST /api/game/{sessionId}/draw - Draw a card
- * - POST /api/game/{sessionId}/uno - Call UNO
+ * - POST /api/game/{sessionId}/one - Call ONE
  * - GET /api/game/{sessionId}/state - Get current game state
  * - POST /api/game/{sessionId}/undo - Undo last move
- * - POST /api/game/{sessionId}/catch-uno/{playerId} - Catch player without UNO
+ * - POST /api/game/{sessionId}/catch-one/{playerId} - Catch player without ONE
  *
  * SECURITY:
  * - All endpoints require authentication
@@ -47,7 +47,7 @@ public class GameController {
 
     private final GameEngine gameEngine;
     private final GameManager gameManager = GameManager.getInstance();
-    private final UnoManager unoManager;
+    private final OneManager oneManager;
 
     /**
      * Start a game session
@@ -177,11 +177,11 @@ public class GameController {
     }
 
     /**
-     * Call UNO
+     * Call ONE
      *
      * POST /api/game/{sessionId}/uno
      *
-     * Player calls UNO when they have 1 card remaining.
+     * Player calls ONE when they have 1 card remaining.
      * Must be called before next player's turn.
      *
      * @param sessionId Game session ID
@@ -189,11 +189,11 @@ public class GameController {
      * @return Success message
      */
     @PostMapping("/{sessionId}/uno")
-    public ResponseEntity<String> callUno(
+    public ResponseEntity<String> callOne(
             @PathVariable String sessionId,
             Authentication authentication) {
 
-        log.info("Player {} calling UNO in session {}", authentication.getName(), sessionId);
+        log.info("Player {} calling ONE in session {}", authentication.getName(), sessionId);
 
         GameSession session = gameManager.getSession(sessionId);
 
@@ -203,16 +203,16 @@ public class GameController {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Player not in game"));
 
-        // Call UNO
-        boolean success = unoManager.callUno(player, session);
+        // Call ONE
+        boolean success = unoManager.callOne(player, session);
 
         if (!success) {
-            return ResponseEntity.badRequest().body("Invalid UNO call");
+            return ResponseEntity.badRequest().body("Invalid ONE call");
         }
 
         log.info("UNO called successfully by {} in session {}", authentication.getName(), sessionId);
 
-        return ResponseEntity.ok("UNO!");
+        return ResponseEntity.ok("ONE!");
     }
 
     /**
@@ -267,11 +267,11 @@ public class GameController {
     }
 
     /**
-     * Catch a player who didn't call UNO
+     * Catch a player who didn't call ONE
      *
      * POST /api/game/{sessionId}/catch-uno/{playerId}
      *
-     * Any player can catch another player who has 1 card but didn't call UNO.
+     * Any player can catch another player who has 1 card but didn't call ONE.
      * Caught player draws +2 cards as penalty.
      *
      * @param sessionId Game session ID
@@ -280,7 +280,7 @@ public class GameController {
      * @return Success message
      */
     @PostMapping("/{sessionId}/catch-uno/{playerId}")
-    public ResponseEntity<String> catchPlayerWithoutUno(
+    public ResponseEntity<String> catchPlayerWithoutOne(
             @PathVariable String sessionId,
             @PathVariable String playerId,
             Authentication authentication) {
@@ -302,7 +302,7 @@ public class GameController {
                 .orElseThrow(() -> new IllegalArgumentException("Player not in game"));
 
         // Catch player
-        boolean success = unoManager.catchPlayerWithoutUno(caughtPlayer, catchingPlayer, session);
+        boolean success = unoManager.catchPlayerWithoutOne(caughtPlayer, catchingPlayer, session);
 
         if (!success) {
             return ResponseEntity.badRequest().body("Invalid catch attempt");
@@ -328,7 +328,7 @@ public class GameController {
                                 .nickname(p.getNickname())
                                 .handSize(p.getHandSize())
                                 .score(p.getScore())
-                                .hasCalledUno(p.hasCalledUno())
+                                .hasCalledOne(p.hasCalledOne())
                                 .isBot(p instanceof BotPlayer)
                                 .build())
                         .collect(Collectors.toList()))

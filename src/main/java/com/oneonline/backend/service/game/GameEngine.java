@@ -39,7 +39,7 @@ public class GameEngine {
 
     private final CardValidator cardValidator;
     private final EffectProcessor effectProcessor;
-    private final UnoManager unoManager;
+    private final OneManager oneManager;
 
     /**
      * Command history for undo functionality
@@ -54,7 +54,7 @@ public class GameEngine {
      * 2. Validate card can be played
      * 3. Execute move
      * 4. Apply card effect
-     * 5. Check UNO call
+     * 5. Check ONE call
      * 6. Check win condition
      * 7. Advance turn
      *
@@ -85,8 +85,8 @@ public class GameEngine {
         // Apply card effect
         applyCardEffect(card, session, turnManager);
 
-        // Check UNO call
-        unoManager.checkUnoCall(player);
+        // Check ONE call
+        oneManager.checkOneCall(player);
 
         // Check win condition
         Optional<Player> winner = checkWinCondition(session);
