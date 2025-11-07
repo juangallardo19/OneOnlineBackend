@@ -226,7 +226,7 @@ public class RankingService {
     }
 
     /**
-     * Get players near user's rank (±10 positions)
+     * Get players near user's rank (+/-10 positions)
      *
      * Used for:
      * - Showing context on leaderboard

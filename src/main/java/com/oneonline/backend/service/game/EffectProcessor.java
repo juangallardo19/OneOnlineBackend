@@ -112,7 +112,7 @@ public class EffectProcessor {
     /**
      * Process Reverse card effect
      *
-     * Reverses turn order (clockwise ” counter-clockwise).
+     * Reverses turn order (clockwise -> counter-clockwise).
      *
      * Special case:
      * - In 2-player game, Reverse acts like Skip
