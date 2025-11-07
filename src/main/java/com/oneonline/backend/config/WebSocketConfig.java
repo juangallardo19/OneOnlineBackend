@@ -43,10 +43,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      *
      * MESSAGE BROKER PREFIXES:
      * - /topic - For broadcasting to all subscribed clients
-     *   Example: /topic/game/ABC123 ’ All players in room ABC123
+     *   Example: /topic/game/ABC123 -> All players in room ABC123
      *
      * - /queue - For sending to specific user
-     *   Example: /queue/notifications ’ Only to that user
+     *   Example: /queue/notifications -> Only to that user
      *
      * APPLICATION DESTINATION PREFIX:
      * - /app - Messages sent from client to server

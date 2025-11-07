@@ -74,7 +74,7 @@ public class GlobalRanking {
     private Integer rankPosition = 0;
 
     /**
-     * Previous rank position (for showing ‘“ arrows)
+     * Previous rank position (for showing up/down arrows)
      * -1 means new entry
      */
     @Column(name = "previous_rank")

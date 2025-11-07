@@ -30,16 +30,16 @@ import org.springframework.context.annotation.Configuration;
  *
  * USER ATTRIBUTE MAPPING:
  * Google:
- * - email ’ user.email
- * - name ’ user.nickname
- * - picture ’ user.profilePicture
- * - sub (subject) ’ OAuth2 provider ID
+ * - email -> user.email
+ * - name -> user.nickname
+ * - picture -> user.profilePicture
+ * - sub (subject) -> OAuth2 provider ID
  *
  * GitHub:
- * - email ’ user.email
- * - login ’ user.nickname
- * - avatar_url ’ user.profilePicture
- * - id ’ OAuth2 provider ID
+ * - email -> user.email
+ * - login -> user.nickname
+ * - avatar_url -> user.profilePicture
+ * - id -> OAuth2 provider ID
  *
  * Design Pattern: None (Configuration class)
  *

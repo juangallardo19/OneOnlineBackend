@@ -1,6 +1,7 @@
 package com.oneonline.backend.model.domain;
 
 import com.oneonline.backend.model.enums.GameStatus;
+import com.oneonline.backend.service.game.TurnManager;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
