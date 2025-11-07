@@ -333,7 +333,7 @@ public class GameController {
                                 .isBot(p instanceof BotPlayer)
                                 .build())
                         .collect(Collectors.toList()))
-                .currentTurn(session.getTurnManager().getCurrentPlayer().getPlayerId())
+                .currentPlayerId(session.getTurnManager().getCurrentPlayer().getPlayerId())
                 .topCard(session.getTopCard())
                 .deckSize(session.getDeck().getRemainingCards())
                 .discardPileSize(session.getDiscardPile().size())

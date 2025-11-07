@@ -331,7 +331,7 @@ public class WebSocketGameController {
                 .sessionId(session.getSessionId())
                 .roomCode(session.getRoom().getRoomCode())
                 .status(session.getStatus().name())
-                .currentTurn(session.getTurnManager().getCurrentPlayer().getPlayerId())
+                .currentPlayerId(session.getTurnManager().getCurrentPlayer().getPlayerId())
                 .topCard(session.getTopCard())
                 .deckSize(session.getDeck().getRemainingCards())
                 .discardPileSize(session.getDiscardPile().size())

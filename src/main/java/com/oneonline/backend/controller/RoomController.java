@@ -8,6 +8,7 @@ import com.oneonline.backend.model.domain.BotPlayer;
 import com.oneonline.backend.model.domain.GameConfiguration;
 import com.oneonline.backend.model.domain.Player;
 import com.oneonline.backend.model.domain.Room;
+import com.oneonline.backend.model.enums.PlayerStatus;
 import com.oneonline.backend.pattern.creational.builder.GameConfigBuilder;
 import com.oneonline.backend.service.game.RoomManager;
 import com.oneonline.backend.util.CodeGenerator;
@@ -91,10 +92,11 @@ public class RoomController {
 
         // Create player from authenticated user
         String playerId = CodeGenerator.generatePlayerId();
-        Player creator = Player.builder()
-                .playerId(playerId)
-                .nickname(authentication.getName())
-                .build();
+        Player creator = new Player();
+        creator.setPlayerId(playerId);
+        creator.setNickname(authentication.getName());
+        creator.setConnected(true);
+        creator.setStatus(PlayerStatus.WAITING);
 
         // Build game configuration
         GameConfiguration config = new GameConfigBuilder()
@@ -163,10 +165,11 @@ public class RoomController {
         // Create player
         String playerId = CodeGenerator.generatePlayerId();
         String nickname = request.getNickname() != null ? request.getNickname() : authentication.getName();
-        Player player = Player.builder()
-                .playerId(playerId)
-                .nickname(nickname)
-                .build();
+        Player player = new Player();
+        player.setPlayerId(playerId);
+        player.setNickname(nickname);
+        player.setConnected(true);
+        player.setStatus(PlayerStatus.WAITING);
 
         // Join room
         Room room = roomManager.joinRoom(code, player);
