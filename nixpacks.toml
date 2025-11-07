@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ['...', 'gradle', 'openjdk21']
+
+[phases.build]
+cmds = ['./gradlew clean build -x check -x test -Pproduction']
+
+[start]
+cmd = 'java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/*.jar'
