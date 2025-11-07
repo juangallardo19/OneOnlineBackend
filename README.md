@@ -689,13 +689,6 @@ This project is developed for **academic purposes** as part of a university soft
 
 ---
 
-## 👤 Author
-
-**Juan Gallardo**
-- Email: juangallardocsfn@gmail.com
-- GitHub: [@juangallardo19](https://github.com/juangallardo19)
-
----
 
 ## 🙏 Acknowledgments
 
