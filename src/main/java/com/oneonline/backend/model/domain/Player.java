@@ -2,7 +2,6 @@ package com.oneonline.backend.model.domain;
 
 import com.oneonline.backend.model.enums.PlayerStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
  * Player data persists only during the game session.
  */
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Player {
@@ -26,7 +24,6 @@ public class Player {
     /**
      * Unique identifier for this player
      */
-    @Builder.Default
     private String playerId = UUID.randomUUID().toString();
 
     /**
@@ -37,37 +34,31 @@ public class Player {
     /**
      * Cards currently in player's hand
      */
-    @Builder.Default
     private List<Card> hand = new ArrayList<>();
 
     /**
      * Player's current score in the game
      */
-    @Builder.Default
     private int score = 0;
 
     /**
      * Whether player is currently connected
      */
-    @Builder.Default
     private boolean connected = true;
 
     /**
      * Whether this player is the room leader
      */
-    @Builder.Default
     private boolean roomLeader = false;
 
     /**
      * Current status of the player
      */
-    @Builder.Default
     private PlayerStatus status = PlayerStatus.WAITING;
 
     /**
      * Whether player has called "ONE" when they have one card
      */
-    @Builder.Default
     private boolean calledOne = false;
 
     /**

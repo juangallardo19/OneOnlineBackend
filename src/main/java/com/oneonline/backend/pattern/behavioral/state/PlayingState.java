@@ -85,8 +85,7 @@ public class PlayingState implements GameState {
         }
 
         // Move to next player
-        Player nextPlayer = session.getTurnOrder().getNext();
-        session.setCurrentPlayer(nextPlayer);
+        session.nextTurn();
     }
 
     @Override
@@ -159,8 +158,7 @@ public class PlayingState implements GameState {
 
         // If current player left, move to next
         if (player.equals(session.getCurrentPlayer())) {
-            Player nextPlayer = session.getTurnOrder().getNext();
-            session.setCurrentPlayer(nextPlayer);
+            session.nextTurn();
         }
     }
 

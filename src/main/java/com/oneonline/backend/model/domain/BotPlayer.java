@@ -1,7 +1,6 @@
 package com.oneonline.backend.model.domain;
 
 import com.oneonline.backend.model.enums.CardColor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
