@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
         log.warn("User not found: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(ex.getMessage())
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         log.warn("Room not found: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(ex.getMessage())
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
         log.warn("Game not found: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.NOT_FOUND.value())
                 .error(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .message(ex.getMessage())
@@ -124,7 +124,7 @@ public class GlobalExceptionHandler {
         log.warn("Invalid move: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(ex.getMessage())
@@ -147,7 +147,7 @@ public class GlobalExceptionHandler {
         log.warn("Unauthorized access: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .message(ex.getMessage())
@@ -170,7 +170,7 @@ public class GlobalExceptionHandler {
         log.warn("Forbidden access: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.FORBIDDEN.value())
                 .error(HttpStatus.FORBIDDEN.getReasonPhrase())
                 .message(ex.getMessage())
@@ -193,7 +193,7 @@ public class GlobalExceptionHandler {
         log.warn("User already exists: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.CONFLICT.value())
                 .error(HttpStatus.CONFLICT.getReasonPhrase())
                 .message(ex.getMessage())
@@ -216,7 +216,7 @@ public class GlobalExceptionHandler {
         log.warn("Authentication failed: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .message("Authentication failed: " + ex.getMessage())
@@ -239,7 +239,7 @@ public class GlobalExceptionHandler {
         log.warn("Access denied: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.FORBIDDEN.value())
                 .error(HttpStatus.FORBIDDEN.getReasonPhrase())
                 .message("Access denied: " + ex.getMessage())
@@ -269,7 +269,7 @@ public class GlobalExceptionHandler {
         });
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message("Validation failed: " + errors)
@@ -292,7 +292,7 @@ public class GlobalExceptionHandler {
         log.warn("Illegal argument: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .message(ex.getMessage())
@@ -315,7 +315,7 @@ public class GlobalExceptionHandler {
         log.warn("Illegal state: {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.CONFLICT.value())
                 .error(HttpStatus.CONFLICT.getReasonPhrase())
                 .message(ex.getMessage())
@@ -338,7 +338,7 @@ public class GlobalExceptionHandler {
         log.error("Runtime exception: {}", ex.getMessage(), ex);
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .message("An unexpected error occurred")
@@ -361,7 +361,7 @@ public class GlobalExceptionHandler {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
 
         ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .message("An unexpected error occurred")

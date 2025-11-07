@@ -133,10 +133,10 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
+            Jwts.parser()
+                    .verifyWith(secretKey)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
 
         } catch (MalformedJwtException e) {
@@ -220,11 +220,11 @@ public class JwtTokenProvider {
      * @return Claims object
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+        return Jwts.parser()
+                .verifyWith(secretKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     /**
@@ -268,5 +268,24 @@ public class JwtTokenProvider {
      */
     public long getAccessTokenExpirationMs() {
         return jwtExpirationMs;
+    }
+
+    /**
+     * Get refresh token expiration time in milliseconds
+     *
+     * @return Refresh token expiration in ms
+     */
+    public long getRefreshTokenExpirationMs() {
+        return jwtRefreshExpirationMs;
+    }
+
+    /**
+     * Get expiration date from token (alias for getExpirationFromToken)
+     *
+     * @param token JWT token
+     * @return Expiration date
+     */
+    public Date getExpirationDate(String token) {
+        return getExpirationFromToken(token);
     }
 }

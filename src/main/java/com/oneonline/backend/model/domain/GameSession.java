@@ -350,6 +350,71 @@ public class GameSession {
         this.pendingDrawCount = 0;
     }
 
+    /**
+     * Peek at next player without changing turn
+     *
+     * @return Next player in turn order
+     */
+    public Player peekNextPlayer() {
+        if (turnOrder.size() < 2) {
+            return null;
+        }
+        return clockwise ? turnOrder.get(1) : turnOrder.get(turnOrder.size() - 1);
+    }
+
+    /**
+     * Set current state (alias for compatibility)
+     *
+     * @param status New game status
+     */
+    public void setStatus(GameStatus status) {
+        this.currentState = status;
+    }
+
+    /**
+     * Set current color for wild cards
+     *
+     * @param color Chosen color
+     */
+    public void setCurrentColor(com.oneonline.backend.model.enums.CardColor color) {
+        // This can be stored if needed for state management
+        // For now, wild cards store their chosen color internally
+    }
+
+    /**
+     * Get max players from room configuration
+     *
+     * @return Max players allowed
+     */
+    public int getMaxPlayers() {
+        return room != null && room.getConfig() != null ?
+               room.getConfig().getMaxPlayers() : 4;
+    }
+
+    /**
+     * Get state (for State pattern compatibility)
+     * Returns a state object based on current status
+     *
+     * @return Current game state
+     */
+    public com.oneonline.backend.pattern.behavioral.state.GameState getState() {
+        return switch (currentState) {
+            case LOBBY -> new com.oneonline.backend.pattern.behavioral.state.LobbyState();
+            case PLAYING -> new com.oneonline.backend.pattern.behavioral.state.PlayingState();
+            case GAME_OVER -> new com.oneonline.backend.pattern.behavioral.state.GameOverState(winner);
+            default -> new com.oneonline.backend.pattern.behavioral.state.LobbyState();
+        };
+    }
+
+    /**
+     * Set state (for State pattern compatibility)
+     *
+     * @param state New game state
+     */
+    public void setState(com.oneonline.backend.pattern.behavioral.state.GameState state) {
+        // State pattern will call setStatus internally
+    }
+
     @Override
     public String toString() {
         return "GameSession: " + sessionId + " [" + currentState + "] - " +

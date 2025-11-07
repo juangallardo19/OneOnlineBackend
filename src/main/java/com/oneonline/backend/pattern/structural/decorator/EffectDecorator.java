@@ -160,9 +160,9 @@ public class EffectDecorator extends CardDecorator {
      * SKIP_NEXT_TWO effect: Skip two players instead of one.
      */
     private void applySkipNextTwo(GameSession session) {
-        if (session != null && session.getTurnOrder() != null) {
+        if (session != null && session.getTurnManager() != null) {
             // Skip one additional player (base skip already skips one)
-            session.getTurnOrder().getNext();
+            session.getTurnManager().skipNextPlayer();
         }
     }
 
@@ -190,11 +190,11 @@ public class EffectDecorator extends CardDecorator {
      * REFLECT effect: Reflect the card's effect back to previous player.
      */
     private void applyReflect(GameSession session) {
-        if (session != null && session.getTurnOrder() != null) {
-            // Reverse direction temporarily to apply to previous player
-            session.setClockwise(!session.isClockwise());
-            Player previousPlayer = session.getTurnOrder().getNext();
-            session.setClockwise(!session.isClockwise());
+        if (session != null && session.getTurnManager() != null) {
+            // Reverse direction temporarily to get previous player
+            session.getTurnManager().reverseTurnOrder();
+            Player previousPlayer = session.getTurnManager().peekNextPlayer();
+            session.getTurnManager().reverseTurnOrder();
 
             // Apply effect to previous player
             // Implementation would depend on card type
@@ -216,11 +216,12 @@ public class EffectDecorator extends CardDecorator {
      * STEAL_TURN effect: Current player gets another turn.
      */
     private void applyStealTurn(GameSession session) {
-        if (session != null && session.getTurnOrder() != null) {
-            // Move back one position so current player plays again
-            session.getTurnOrder().reverse();
-            session.getTurnOrder().getNext();
-            session.getTurnOrder().reverse();
+        if (session != null && session.getTurnManager() != null) {
+            // Reverse direction, advance turn, then reverse back
+            // This effectively gives current player another turn
+            session.getTurnManager().reverseTurnOrder();
+            session.getTurnManager().nextTurn();
+            session.getTurnManager().reverseTurnOrder();
         }
     }
 

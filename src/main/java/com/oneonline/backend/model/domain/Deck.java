@@ -154,6 +154,56 @@ public class Deck {
     }
 
     /**
+     * Draw a card from the deck (alias for drawCard)
+     *
+     * @return The drawn card, or null if deck is empty
+     */
+    public Card draw() {
+        return drawCard();
+    }
+
+    /**
+     * Add a card to the deck
+     *
+     * @param card The card to add
+     */
+    public void addCard(Card card) {
+        if (card != null) {
+            cards.push(card);
+        }
+    }
+
+    /**
+     * Get remaining cards count (alias for size)
+     *
+     * @return Number of cards remaining
+     */
+    public int getRemainingCards() {
+        return size();
+    }
+
+    /**
+     * Reset the deck (reinitialize and shuffle)
+     */
+    public void reset() {
+        initialize();
+        shuffle();
+    }
+
+    /**
+     * Refill deck from discard pile (overload without topCard parameter)
+     *
+     * @param discardPile The discard pile to refill from
+     */
+    public void refillFromDiscard(Stack<Card> discardPile) {
+        if (discardPile.isEmpty()) {
+            return;
+        }
+        Card topCard = discardPile.peek();
+        refillFromDiscard(discardPile, topCard);
+    }
+
+    /**
      * Get the total number of cards in a standard ONE deck
      *
      * @return 108

@@ -372,14 +372,13 @@ public class RoomController {
      */
     private RoomResponse mapToRoomResponse(Room room) {
         return RoomResponse.builder()
+                .roomId(room.getRoomCode()) // Using roomCode as roomId
                 .roomCode(room.getRoomCode())
-                .leader(room.getLeader())
-                .players(room.getPlayers())
+                .hostId(room.getLeader() != null ? room.getLeader().getPlayerId() : null)
                 .isPrivate(room.isPrivate())
-                .status(room.getStatus())
-                .configuration(room.getConfiguration())
-                .playerCount(room.getPlayers().size())
-                .maxPlayers(room.getConfiguration().getMaxPlayers())
+                .status(room.getStatus() != null ? room.getStatus().name() : "WAITING")
+                .currentPlayers(room.getPlayers().size())
+                .maxPlayers(room.getConfiguration() != null ? room.getConfiguration().getMaxPlayers() : 4)
                 .build();
     }
 }
