@@ -61,6 +61,16 @@ public class GameStateResponse {
     private Integer deckSize;
 
     /**
+     * Number of cards in discard pile.
+     */
+    private Integer discardPileSize;
+
+    /**
+     * Play direction (CLOCKWISE, COUNTER_CLOCKWISE).
+     */
+    private String direction;
+
+    /**
      * Number of cards pending to draw (Draw Two/Four effect).
      */
     private Integer pendingDrawCount;
