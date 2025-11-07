@@ -260,4 +260,13 @@ public class JwtTokenProvider {
 
         return generateAccessToken(userId, email);
     }
+
+    /**
+     * Get access token expiration time in milliseconds
+     *
+     * @return Access token expiration in ms
+     */
+    public long getAccessTokenExpirationMs() {
+        return jwtExpirationMs;
+    }
 }

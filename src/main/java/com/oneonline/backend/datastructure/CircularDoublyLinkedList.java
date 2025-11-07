@@ -130,6 +130,28 @@ public class CircularDoublyLinkedList<T> {
     }
 
     /**
+     * Move to next element without returning it
+     * Direction depends on clockwise flag
+     * Time complexity: O(1)
+     */
+    public void moveNext() {
+        if (current != null) {
+            current = clockwise ? current.next : current.prev;
+        }
+    }
+
+    /**
+     * Move to previous element without returning it
+     * Direction depends on clockwise flag
+     * Time complexity: O(1)
+     */
+    public void movePrevious() {
+        if (current != null) {
+            current = clockwise ? current.prev : current.next;
+        }
+    }
+
+    /**
      * Peek at next element without moving current pointer
      *
      * @return Next element without changing position
@@ -373,7 +395,7 @@ public class CircularDoublyLinkedList<T> {
      */
     public String toCircularString() {
         if (current == null) {
-            return "À (empty)";
+            return "ÔøΩ (empty)";
         }
 
         StringBuilder sb = new StringBuilder();
@@ -385,7 +407,7 @@ public class CircularDoublyLinkedList<T> {
             } else {
                 sb.append(current.data);
             }
-            sb.append(clockwise ? " í " : " ê ");
+            sb.append(clockwise ? " ÔøΩ " : " ÔøΩ ");
             current = current.next;
         } while (current != start);
 

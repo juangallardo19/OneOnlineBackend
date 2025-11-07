@@ -142,7 +142,7 @@ public class RoomManager {
         Room room = gameManager.getRoom(roomCode);
 
         // Remove player
-        room.removePlayer(player.getPlayerId());
+        room.removePlayerById(player.getPlayerId());
 
         log.info("Player {} left room {}", player.getNickname(), roomCode);
 
@@ -193,7 +193,11 @@ public class RoomManager {
 
         // Create bot with auto-generated name
         String botName = "Bot" + (botCount + 1);
-        BotPlayer bot = new BotPlayer(CodeGenerator.generatePlayerId(), botName);
+        BotPlayer bot = BotPlayer.builder()
+            .playerId(CodeGenerator.generatePlayerId())
+            .nickname(botName)
+            .temporary(false)
+            .build();
 
         // Add bot to room
         room.addPlayer(bot);
@@ -227,7 +231,7 @@ public class RoomManager {
         }
 
         // Remove bot
-        room.removePlayer(botId);
+        room.removePlayerById(botId);
 
         log.info("Bot {} removed from room {}", playerOpt.get().getNickname(), roomCode);
         return room;
@@ -265,7 +269,7 @@ public class RoomManager {
         }
 
         // Remove player
-        room.removePlayer(targetPlayerId);
+        room.removePlayerById(targetPlayerId);
 
         log.info("Player {} kicked from room {} by leader {}",
             targetOpt.get().getNickname(), roomCode, room.getLeader().getNickname());

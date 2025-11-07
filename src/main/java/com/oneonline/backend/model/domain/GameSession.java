@@ -288,6 +288,67 @@ public class GameSession {
         return elapsed > limit;
     }
 
+    /**
+     * Get all players (alias method for compatibility)
+     *
+     * @return List of all players
+     */
+    public List<Player> getPlayers() {
+        return room != null ? room.getAllPlayers() : new ArrayList<>();
+    }
+
+    /**
+     * Get deck (alias method for compatibility)
+     *
+     * @return Main deck
+     */
+    public Deck getDeck() {
+        return mainDeck;
+    }
+
+    /**
+     * Get status (alias method for compatibility)
+     *
+     * @return Current game status
+     */
+    public GameStatus getStatus() {
+        return currentState;
+    }
+
+    /**
+     * Get turn manager (alias method for compatibility)
+     *
+     * @return Turn manager
+     */
+    public TurnManager getTurnManager() {
+        return new TurnManager(new ArrayList<>(turnOrder));
+    }
+
+    /**
+     * Get configuration (alias method for compatibility)
+     *
+     * @return Game configuration
+     */
+    public GameConfiguration getConfiguration() {
+        return room != null ? room.getConfig() : null;
+    }
+
+    /**
+     * Add pending draw count (alias method for compatibility)
+     *
+     * @param count Count to add
+     */
+    public void addPendingDrawCount(int count) {
+        this.pendingDrawCount += count;
+    }
+
+    /**
+     * Reset pending draw count (alias method for compatibility)
+     */
+    public void resetPendingDrawCount() {
+        this.pendingDrawCount = 0;
+    }
+
     @Override
     public String toString() {
         return "GameSession: " + sessionId + " [" + currentState + "] - " +

@@ -183,6 +183,41 @@ public class Player {
         calledOne = false;
     }
 
+    /**
+     * Get number of cards in hand
+     *
+     * @return Hand size
+     */
+    public int getHandSize() {
+        return hand.size();
+    }
+
+    /**
+     * Check if player has called ONE
+     *
+     * @return true if player called ONE
+     */
+    public boolean hasCalledOne() {
+        return calledOne;
+    }
+
+    /**
+     * Reset ONE call status
+     */
+    public void resetOneCall() {
+        calledOne = false;
+    }
+
+    /**
+     * Check if player has a specific card
+     *
+     * @param card Card to check
+     * @return true if card is in hand
+     */
+    public boolean hasCard(Card card) {
+        return hand.contains(card);
+    }
+
     @Override
     public String toString() {
         return nickname + " (" + hand.size() + " cards, " + score + " points)";

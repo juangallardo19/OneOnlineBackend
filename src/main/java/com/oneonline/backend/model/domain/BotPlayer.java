@@ -40,14 +40,58 @@ public class BotPlayer extends Player {
      */
     private static final double ONE_CALL_SUCCESS_RATE = 0.9;
 
-    @Builder
-    public BotPlayer(String playerId, String nickname, boolean temporary, Player originalPlayer) {
+    /**
+     * Constructor for BotPlayer with builder-like pattern
+     */
+    public BotPlayer() {
         super();
-        setPlayerId(playerId != null ? playerId : UUID.randomUUID().toString());
-        setNickname(nickname != null ? nickname : "Bot_" + RANDOM.nextInt(1000));
-        this.temporary = temporary;
-        this.originalPlayer = originalPlayer;
-        setConnected(true);
+    }
+
+    /**
+     * Builder-style static method to create BotPlayer
+     */
+    public static BotPlayerBuilder builder() {
+        return new BotPlayerBuilder();
+    }
+
+    /**
+     * Custom builder for BotPlayer
+     */
+    public static class BotPlayerBuilder {
+        private String playerId;
+        private String nickname;
+        private boolean temporary;
+        private Player originalPlayer;
+
+        public BotPlayerBuilder playerId(String playerId) {
+            this.playerId = playerId;
+            return this;
+        }
+
+        public BotPlayerBuilder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public BotPlayerBuilder temporary(boolean temporary) {
+            this.temporary = temporary;
+            return this;
+        }
+
+        public BotPlayerBuilder originalPlayer(Player originalPlayer) {
+            this.originalPlayer = originalPlayer;
+            return this;
+        }
+
+        public BotPlayer build() {
+            BotPlayer bot = new BotPlayer();
+            bot.setPlayerId(playerId != null ? playerId : UUID.randomUUID().toString());
+            bot.setNickname(nickname != null ? nickname : "Bot_" + RANDOM.nextInt(1000));
+            bot.temporary = temporary;
+            bot.originalPlayer = originalPlayer;
+            bot.setConnected(true);
+            return bot;
+        }
     }
 
     /**

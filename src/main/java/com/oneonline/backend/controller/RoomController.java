@@ -91,7 +91,10 @@ public class RoomController {
 
         // Create player from authenticated user
         String playerId = CodeGenerator.generatePlayerId();
-        Player creator = new Player(playerId, authentication.getName());
+        Player creator = Player.builder()
+                .playerId(playerId)
+                .nickname(authentication.getName())
+                .build();
 
         // Build game configuration
         GameConfiguration config = new GameConfigBuilder()
@@ -160,7 +163,10 @@ public class RoomController {
         // Create player
         String playerId = CodeGenerator.generatePlayerId();
         String nickname = request.getNickname() != null ? request.getNickname() : authentication.getName();
-        Player player = new Player(playerId, nickname);
+        Player player = Player.builder()
+                .playerId(playerId)
+                .nickname(nickname)
+                .build();
 
         // Join room
         Room room = roomManager.joinRoom(code, player);

@@ -29,6 +29,11 @@ public class JoinRoomRequest {
     private String roomCode;
 
     /**
+     * Player nickname (optional, defaults to username).
+     */
+    private String nickname;
+
+    /**
      * Optional password for private rooms.
      */
     private String password;
