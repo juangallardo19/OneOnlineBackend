@@ -26,6 +26,11 @@ public class GameStateResponse {
     private String sessionId;
 
     /**
+     * Room code.
+     */
+    private String roomCode;
+
+    /**
      * Game status (LOBBY, DEALING_CARDS, PLAYING, PAUSED, GAME_OVER).
      */
     private String status;

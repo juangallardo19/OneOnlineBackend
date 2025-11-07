@@ -288,7 +288,7 @@ public class TurnManager {
 
         // Clear and rebuild
         while (playerQueue.size() > 0) {
-            playerQueue.remove(0);
+            playerQueue.removeCurrent();
         }
 
         for (Player player : remainingPlayers) {

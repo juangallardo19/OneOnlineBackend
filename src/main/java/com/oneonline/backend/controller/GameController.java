@@ -119,7 +119,7 @@ public class GameController {
 
         // If Wild card, set chosen color
         if (card instanceof WildCard wildCard && request.getChosenColor() != null) {
-            wildCard.setChosenColor(request.getChosenColor());
+            wildCard.setChosenColor(CardColor.valueOf(request.getChosenColor()));
         }
 
         // Process move
@@ -204,7 +204,7 @@ public class GameController {
                 .orElseThrow(() -> new IllegalArgumentException("Player not in game"));
 
         // Call ONE
-        boolean success = unoManager.callOne(player, session);
+        boolean success = oneManager.callOne(player, session);
 
         if (!success) {
             return ResponseEntity.badRequest().body("Invalid ONE call");
@@ -302,7 +302,7 @@ public class GameController {
                 .orElseThrow(() -> new IllegalArgumentException("Player not in game"));
 
         // Catch player
-        boolean success = unoManager.catchPlayerWithoutOne(caughtPlayer, catchingPlayer, session);
+        boolean success = oneManager.catchPlayerWithoutOne(caughtPlayer, catchingPlayer, session);
 
         if (!success) {
             return ResponseEntity.badRequest().body("Invalid catch attempt");
@@ -326,9 +326,9 @@ public class GameController {
                         .map(p -> GameStateResponse.PlayerState.builder()
                                 .playerId(p.getPlayerId())
                                 .nickname(p.getNickname())
-                                .handSize(p.getHandSize())
+                                .cardCount(p.getHandSize())
                                 .score(p.getScore())
-                                .hasCalledOne(p.hasCalledOne())
+                                .calledOne(p.hasCalledOne())
                                 .isBot(p instanceof BotPlayer)
                                 .build())
                         .collect(Collectors.toList()))

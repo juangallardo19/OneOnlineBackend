@@ -323,6 +323,82 @@ public class Room {
         }
     }
 
+    /**
+     * Get room leader (alias method for compatibility)
+     *
+     * @return Room leader
+     */
+    public Player getLeader() {
+        return roomLeader;
+    }
+
+    /**
+     * Set room leader (alias method for compatibility)
+     *
+     * @param player New leader
+     */
+    public void setLeader(Player player) {
+        this.roomLeader = player;
+    }
+
+    /**
+     * Check if room is private (alias method for compatibility)
+     *
+     * @return true if private
+     */
+    public boolean isPrivate() {
+        return privateRoom;
+    }
+
+    /**
+     * Get game configuration (alias method for compatibility)
+     *
+     * @return Game configuration
+     */
+    public GameConfiguration getConfiguration() {
+        return config;
+    }
+
+    /**
+     * Check if room is full (alias method for compatibility)
+     *
+     * @return true if full
+     */
+    public boolean isFull() {
+        return getTotalPlayerCount() >= 4;
+    }
+
+    /**
+     * Check if player is in room (alias method for compatibility)
+     *
+     * @param playerId Player ID
+     * @return true if player in room
+     */
+    public boolean hasPlayer(String playerId) {
+        return getAllPlayers().stream().anyMatch(p -> p.getPlayerId().equals(playerId));
+    }
+
+    /**
+     * Remove player by ID (alias method for compatibility)
+     *
+     * @param playerId Player ID to remove
+     * @return true if removed
+     */
+    public boolean removePlayerById(String playerId) {
+        Player player = getAllPlayers().stream()
+            .filter(p -> p.getPlayerId().equals(playerId))
+            .findFirst().orElse(null);
+
+        if (player == null) {
+            return false;
+        }
+
+        if (player instanceof BotPlayer) {
+            return bots.remove(player);
+        }
+        return players.remove(player);
+    }
+
     @Override
     public String toString() {
         return "Room " + roomCode + " [" + status + "] - " +

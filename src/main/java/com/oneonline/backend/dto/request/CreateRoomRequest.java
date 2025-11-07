@@ -56,6 +56,16 @@ public class CreateRoomRequest {
     private Boolean allowBots = true;
 
     /**
+     * Whether to allow stacking +2 and +4 cards.
+     */
+    private Boolean allowStackingCards = true;
+
+    /**
+     * Points needed to win the game.
+     */
+    private Integer pointsToWin = 500;
+
+    /**
      * Custom room name (optional).
      */
     private String roomName;
