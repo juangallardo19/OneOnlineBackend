@@ -218,6 +218,33 @@ public class Player {
         return hand.contains(card);
     }
 
+    /**
+     * Add a card to player's hand (alias for drawCard)
+     *
+     * @param card The card to add
+     */
+    public void addCard(Card card) {
+        drawCard(card);
+    }
+
+    /**
+     * Check if player has called UNO (alias for hasCalledOne)
+     *
+     * @return true if player called UNO
+     */
+    public boolean isCalledUno() {
+        return hasCalledOne();
+    }
+
+    /**
+     * Set the UNO call status
+     *
+     * @param called Whether player has called UNO
+     */
+    public void setCalledUno(boolean called) {
+        this.calledOne = called;
+    }
+
     @Override
     public String toString() {
         return nickname + " (" + hand.size() + " cards, " + score + " points)";

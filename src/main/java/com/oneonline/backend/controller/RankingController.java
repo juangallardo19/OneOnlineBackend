@@ -150,18 +150,24 @@ public class RankingController {
         GlobalRanking ranking = rankingRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Player ranking not found"));
 
-        RankingResponse response = RankingResponse.builder()
+        RankingResponse.RankEntry rankEntry = RankingResponse.RankEntry.builder()
                 .rank(ranking.getRankPosition())
-                .userId(userId)
+                .playerId(userId.toString())
                 .nickname(ranking.getUser().getNickname())
-                .points(ranking.getPoints())
-                .totalGames(stats.getTotalGames())
-                .totalWins(stats.getTotalWins())
-                .totalLosses(stats.getTotalLosses())
+                .totalPoints(ranking.getPoints())
+                .gamesPlayed(stats.getTotalGames())
+                .wins(stats.getTotalWins())
+                .losses(stats.getTotalLosses())
                 .winRate(stats.getWinRate())
-                .currentStreak(stats.getCurrentStreak())
+                .winStreak(stats.getCurrentStreak())
                 .bestStreak(stats.getBestStreak())
                 .rankChange(ranking.getRankPosition() - ranking.getPreviousRank())
+                .build();
+
+        RankingResponse response = RankingResponse.builder()
+                .rankingType("GLOBAL")
+                .currentUserRank(rankEntry)
+                .generatedAt(System.currentTimeMillis())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -306,16 +312,23 @@ public class RankingController {
      * @return RankingResponse DTO
      */
     private RankingResponse mapToRankingResponse(GlobalRanking ranking) {
-        return RankingResponse.builder()
+        RankingResponse.RankEntry rankEntry = RankingResponse.RankEntry.builder()
                 .rank(ranking.getRankPosition())
-                .userId(ranking.getUser().getId())
+                .playerId(ranking.getUser().getId().toString())
                 .nickname(ranking.getUser().getNickname())
-                .points(ranking.getPoints())
-                .totalWins(ranking.getTotalWins())
+                .totalPoints(ranking.getPoints())
+                .wins(ranking.getTotalWins())
+                .gamesPlayed(ranking.getTotalGames())
                 .winRate(ranking.getWinRate())
-                .currentStreak(ranking.getCurrentStreak())
+                .winStreak(ranking.getCurrentStreak())
                 .bestStreak(ranking.getBestStreak())
                 .rankChange(ranking.getRankPosition() - ranking.getPreviousRank())
+                .build();
+
+        return RankingResponse.builder()
+                .rankingType("GLOBAL")
+                .currentUserRank(rankEntry)
+                .generatedAt(System.currentTimeMillis())
                 .build();
     }
 }

@@ -330,7 +330,7 @@ public class WebSocketGameController {
         return GameStateResponse.builder()
                 .sessionId(session.getSessionId())
                 .roomCode(session.getRoom().getRoomCode())
-                .status(session.getStatus())
+                .status(session.getStatus().name())
                 .currentTurn(session.getTurnManager().getCurrentPlayer().getPlayerId())
                 .topCard(session.getTopCard())
                 .deckSize(session.getDeck().getRemainingCards())

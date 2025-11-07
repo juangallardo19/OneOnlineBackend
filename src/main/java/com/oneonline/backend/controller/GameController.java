@@ -3,6 +3,7 @@ package com.oneonline.backend.controller;
 import com.oneonline.backend.dto.request.PlayCardRequest;
 import com.oneonline.backend.dto.response.GameStateResponse;
 import com.oneonline.backend.model.domain.*;
+import com.oneonline.backend.model.enums.CardColor;
 import com.oneonline.backend.service.game.GameEngine;
 import com.oneonline.backend.service.game.GameManager;
 import com.oneonline.backend.service.game.OneManager;
@@ -321,7 +322,7 @@ public class GameController {
         return GameStateResponse.builder()
                 .sessionId(session.getSessionId())
                 .roomCode(session.getRoom().getRoomCode())
-                .status(session.getStatus())
+                .status(session.getStatus().name())
                 .players(session.getPlayers().stream()
                         .map(p -> GameStateResponse.PlayerState.builder()
                                 .playerId(p.getPlayerId())
