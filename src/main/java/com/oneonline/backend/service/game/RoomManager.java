@@ -4,7 +4,7 @@ import com.oneonline.backend.model.domain.BotPlayer;
 import com.oneonline.backend.model.domain.GameConfiguration;
 import com.oneonline.backend.model.domain.Player;
 import com.oneonline.backend.model.domain.Room;
-import com.oneonline.backend.pattern.creational.RoomBuilder;
+import com.oneonline.backend.pattern.creational.builder.RoomBuilder;
 import com.oneonline.backend.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -18,7 +18,7 @@ public class GameNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public GameNotFoundException(String sessionId) {
-        super("Game session not found with ID: " + sessionId);
+    public static GameNotFoundException bySessionId(String sessionId) {
+        return new GameNotFoundException("Game session not found with ID: " + sessionId);
     }
 }

@@ -1,6 +1,6 @@
 package com.oneonline.backend.config;
 
-import com.oneonline.backend.security.JwtAuthenticationFilter;
+import com.oneonline.backend.security.JwtAuthFilter;
 import com.oneonline.backend.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +38,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
     /**
