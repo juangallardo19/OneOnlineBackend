@@ -332,11 +332,29 @@ public class WebSocketGameController {
                 .roomCode(session.getRoom().getRoomCode())
                 .status(session.getStatus().name())
                 .currentPlayerId(session.getTurnManager().getCurrentPlayer().getPlayerId())
-                .topCard(session.getTopCard())
+                .topCard(convertCardToCardInfo(session.getTopCard()))
                 .deckSize(session.getDeck().getRemainingCards())
                 .discardPileSize(session.getDiscardPile().size())
                 .direction(session.getTurnManager().isClockwise() ? "CLOCKWISE" : "COUNTER_CLOCKWISE")
                 .pendingDrawCount(session.getPendingDrawCount())
+                .build();
+    }
+
+    /**
+     * Convert Card domain object to CardInfo DTO
+     *
+     * @param card Card to convert
+     * @return CardInfo DTO
+     */
+    private GameStateResponse.CardInfo convertCardToCardInfo(Card card) {
+        if (card == null) {
+            return null;
+        }
+        return GameStateResponse.CardInfo.builder()
+                .cardId(card.getCardId())
+                .type(card.getType() != null ? card.getType().name() : null)
+                .color(card.getColor() != null ? card.getColor().name() : null)
+                .value(card.getValue())
                 .build();
     }
 }
