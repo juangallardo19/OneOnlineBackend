@@ -18,7 +18,7 @@ public class RoomNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public RoomNotFoundException(String roomCode) {
-        super("Room not found with code: " + roomCode);
+    public static RoomNotFoundException byRoomCode(String roomCode) {
+        return new RoomNotFoundException("Room not found with code: " + roomCode);
     }
 }

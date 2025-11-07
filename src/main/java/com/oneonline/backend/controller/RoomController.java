@@ -8,7 +8,7 @@ import com.oneonline.backend.model.domain.BotPlayer;
 import com.oneonline.backend.model.domain.GameConfiguration;
 import com.oneonline.backend.model.domain.Player;
 import com.oneonline.backend.model.domain.Room;
-import com.oneonline.backend.pattern.creational.GameConfigBuilder;
+import com.oneonline.backend.pattern.creational.builder.GameConfigBuilder;
 import com.oneonline.backend.service.game.RoomManager;
 import com.oneonline.backend.util.CodeGenerator;
 import jakarta.validation.Valid;

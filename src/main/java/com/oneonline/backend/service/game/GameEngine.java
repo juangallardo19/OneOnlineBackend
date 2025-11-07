@@ -3,7 +3,7 @@ package com.oneonline.backend.service.game;
 import com.oneonline.backend.model.domain.*;
 import com.oneonline.backend.model.enums.CardType;
 import com.oneonline.backend.model.enums.GameStatus;
-import com.oneonline.backend.pattern.behavioral.GameCommand;
+import com.oneonline.backend.pattern.behavioral.command.GameCommand;
 import com.oneonline.backend.pattern.behavioral.command.PlayCardCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

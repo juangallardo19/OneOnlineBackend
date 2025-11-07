@@ -207,7 +207,7 @@ public class StatsService {
         detailedStats.put("averagePointsPerGame", Math.round(avgPointsPerGame * 100.0) / 100.0);
 
         // Game duration
-        detailedStats.put("averageGameDuration", stats.getAverageGameDuration());
+        detailedStats.put("averageGameDuration", stats.getAvgGameDuration());
 
         // Performance metrics
         detailedStats.put("winLossRatio", calculateWinLossRatio(stats.getTotalWins(), stats.getTotalLosses()));
@@ -259,7 +259,7 @@ public class StatsService {
     @Transactional(readOnly = true)
     public double getAverageGameDuration(Long userId) {
         PlayerStats stats = getPlayerStats(userId);
-        return stats != null ? stats.getAverageGameDuration() : 0.0;
+        return stats != null ? stats.getAvgGameDuration() : 0.0;
     }
 
     /**
@@ -321,7 +321,7 @@ public class StatsService {
      * @param newDuration New game duration in minutes
      */
     private void updateAverageGameDuration(PlayerStats stats, int newDuration) {
-        double oldAvg = stats.getAverageGameDuration();
+        double oldAvg = stats.getAvgGameDuration();
         int oldCount = stats.getTotalGames() - 1; // -1 because we already incremented totalGames
 
         double newAvg;
@@ -331,7 +331,7 @@ public class StatsService {
             newAvg = (oldAvg * oldCount + newDuration) / stats.getTotalGames();
         }
 
-        stats.setAverageGameDuration(Math.round(newAvg * 100.0) / 100.0);
+        stats.setAvgGameDuration(Math.round(newAvg * 100.0) / 100.0);
     }
 
     /**
@@ -355,7 +355,7 @@ public class StatsService {
         stats.setCurrentStreak(0);
         stats.setBestStreak(0);
         stats.setTotalPoints(0);
-        stats.setAverageGameDuration(0.0);
+        stats.setAvgGameDuration(0.0);
 
         return stats;
     }
@@ -381,7 +381,7 @@ public class StatsService {
         stats.setCurrentStreak(0);
         stats.setBestStreak(0);
         stats.setTotalPoints(0);
-        stats.setAverageGameDuration(0.0);
+        stats.setAvgGameDuration(0.0);
 
         playerStatsRepository.save(stats);
         log.info("Stats reset for user: {}", userId);
