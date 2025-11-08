@@ -68,11 +68,12 @@ class AuthControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.token").exists())
-            .andExpect(jsonPath("$.refreshToken").exists())
+            .andExpect(jsonPath("$.tokenType").value("Bearer"))
             .andExpect(jsonPath("$.email").value("newuser@example.com"))
             .andExpect(jsonPath("$.nickname").value("newuser"))
             .andExpect(jsonPath("$.userId").exists())
-            .andExpect(jsonPath("$.expiresIn").exists());
+            .andExpect(jsonPath("$.expiresAt").exists())
+            .andExpect(jsonPath("$.roles").isArray());
     }
 
     @Test
@@ -166,9 +167,11 @@ class AuthControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.token").exists())
-            .andExpect(jsonPath("$.refreshToken").exists())
+            .andExpect(jsonPath("$.tokenType").value("Bearer"))
             .andExpect(jsonPath("$.email").value("testuser@example.com"))
-            .andExpect(jsonPath("$.nickname").value("testuser"));
+            .andExpect(jsonPath("$.nickname").value("testuser"))
+            .andExpect(jsonPath("$.userId").exists())
+            .andExpect(jsonPath("$.expiresAt").exists());
     }
 
     @Test
