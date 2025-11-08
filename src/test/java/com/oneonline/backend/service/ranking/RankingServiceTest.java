@@ -67,22 +67,22 @@ class RankingServiceTest {
 
         // Setup test rankings
         ranking1 = new GlobalRanking();
-        ranking1.setRankingId(1L);
+        ranking1.setId(1L);
         ranking1.setUser(user1);
         ranking1.setRankPosition(1);
         ranking1.setPoints(100);
         ranking1.setTotalWins(10);
-        ranking1.setTotalGames(15);
-        ranking1.setWinRate(66.67);
+        ranking1.setTotalGames(12);
+        ranking1.setWinRate(83.33);
 
         ranking2 = new GlobalRanking();
-        ranking2.setRankingId(2L);
+        ranking2.setId(2L);
         ranking2.setUser(user2);
         ranking2.setRankPosition(2);
         ranking2.setPoints(80);
         ranking2.setTotalWins(8);
-        ranking2.setTotalGames(12);
-        ranking2.setWinRate(66.67);
+        ranking2.setTotalGames(10);
+        ranking2.setWinRate(80.0);
     }
 
     @Test
