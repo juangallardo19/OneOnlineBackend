@@ -264,13 +264,13 @@ class CardValidatorTest {
     }
 
     @Test
-    @DisplayName("Should allow Wild Draw Four when only wild cards in hand")
-    void shouldAllowWildDrawFourWhenOnlyWildCards() {
+    @DisplayName("Should reject Wild Draw Four when Wild card is available")
+    void shouldRejectWildDrawFourWhenWildCardAvailable() {
         // Given
         Card topCard = new NumberCard(CardColor.RED, 5);
         WildDrawFourCard wildDrawFour = new WildDrawFourCard();
         List<Card> hand = Arrays.asList(
-            new WildCard(),
+            new WildCard(),  // Wild card is always valid
             wildDrawFour
         );
 
@@ -278,7 +278,8 @@ class CardValidatorTest {
         boolean isLegal = cardValidator.canPlayWildDrawFourLegally(wildDrawFour, topCard, hand);
 
         // Then
-        assertThat(isLegal).isTrue();
+        // Wild Draw Four is illegal because player has a valid Wild card
+        assertThat(isLegal).isFalse();
     }
 
     // ========================================
