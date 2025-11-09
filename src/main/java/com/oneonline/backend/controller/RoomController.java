@@ -8,7 +8,6 @@ import com.oneonline.backend.model.domain.BotPlayer;
 import com.oneonline.backend.model.domain.GameConfiguration;
 import com.oneonline.backend.model.domain.Player;
 import com.oneonline.backend.model.domain.Room;
-import com.oneonline.backend.model.enums.PlayerStatus;
 import com.oneonline.backend.pattern.creational.builder.GameConfigBuilder;
 import com.oneonline.backend.service.game.RoomManager;
 import com.oneonline.backend.util.CodeGenerator;
@@ -92,18 +91,20 @@ public class RoomController {
 
         // Create player from authenticated user
         String playerId = CodeGenerator.generatePlayerId();
-        Player creator = new Player();
-        creator.setPlayerId(playerId);
-        creator.setNickname(authentication.getName());
-        creator.setConnected(true);
-        creator.setStatus(PlayerStatus.WAITING);
+        Player creator = Player.builder()
+                .playerId(playerId)
+                .userEmail(authentication.getName()) // Store user email for identification
+                .nickname(authentication.getName())
+                .build();
 
         // Build game configuration
         GameConfiguration config = new GameConfigBuilder()
                 .withMaxPlayers(request.getMaxPlayers() != null ? request.getMaxPlayers() : 4)
+                .withInitialCardCount(request.getInitialHandSize() != null ? request.getInitialHandSize() : 7)
                 .withTurnTimeLimit(request.getTurnTimeLimit() != null ? request.getTurnTimeLimit() : 60)
                 .withAllowStackingCards(request.getAllowStackingCards() != null ? request.getAllowStackingCards() : true)
                 .withPointsToWin(request.getPointsToWin() != null ? request.getPointsToWin() : 500)
+                .withTournamentMode(request.getTournamentMode() != null ? request.getTournamentMode() : false)
                 .build();
 
         // Create room
@@ -165,11 +166,11 @@ public class RoomController {
         // Create player
         String playerId = CodeGenerator.generatePlayerId();
         String nickname = request.getNickname() != null ? request.getNickname() : authentication.getName();
-        Player player = new Player();
-        player.setPlayerId(playerId);
-        player.setNickname(nickname);
-        player.setConnected(true);
-        player.setStatus(PlayerStatus.WAITING);
+        Player player = Player.builder()
+                .playerId(playerId)
+                .userEmail(authentication.getName()) // Store user email for identification
+                .nickname(nickname)
+                .build();
 
         // Join room
         Room room = roomManager.joinRoom(code, player);
@@ -374,14 +375,41 @@ public class RoomController {
      * @return RoomResponse DTO
      */
     private RoomResponse mapToRoomResponse(Room room) {
+        // Map ALL players (humans + bots) to PlayerInfo DTOs
+        List<RoomResponse.PlayerInfo> playerInfoList = room.getAllPlayers().stream()
+                .map(player -> RoomResponse.PlayerInfo.builder()
+                        .playerId(player.getPlayerId())
+                        .nickname(player.getNickname())
+                        .userEmail(player.getUserEmail()) // Include user email for frontend identification
+                        .isBot(player instanceof BotPlayer)
+                        .status(player.getStatus() != null ? player.getStatus().name() : "WAITING")
+                        .isHost(room.getLeader() != null && player.getPlayerId().equals(room.getLeader().getPlayerId()))
+                        .build())
+                .collect(Collectors.toList());
+
+        // Map game configuration
+        RoomResponse.GameConfig config = null;
+        if (room.getConfiguration() != null) {
+            config = RoomResponse.GameConfig.builder()
+                    .initialHandSize(room.getConfiguration().getInitialHandSize())
+                    .turnTimeLimit(room.getConfiguration().getTurnTimeLimit())
+                    .allowBots(room.getConfiguration().isAllowBots())
+                    .maxBots(room.getConfiguration().getMaxBots())
+                    .build();
+        }
+
         return RoomResponse.builder()
                 .roomId(room.getRoomCode()) // Using roomCode as roomId
                 .roomCode(room.getRoomCode())
+                .roomName(room.getRoomName())
                 .hostId(room.getLeader() != null ? room.getLeader().getPlayerId() : null)
                 .isPrivate(room.isPrivate())
                 .status(room.getStatus() != null ? room.getStatus().name() : "WAITING")
-                .currentPlayers(room.getPlayers().size())
+                .players(playerInfoList) // Includes ALL players (humans + bots)
+                .currentPlayers(room.getTotalPlayerCount()) // Total count including bots
                 .maxPlayers(room.getConfiguration() != null ? room.getConfiguration().getMaxPlayers() : 4)
+                .config(config)
+                .createdAt(room.getCreatedAt() != null ? room.getCreatedAt().getTime() : System.currentTimeMillis())
                 .build();
     }
 }
