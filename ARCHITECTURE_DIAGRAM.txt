@@ -1,0 +1,289 @@
+================================================================================
+                    ONEONLINE BACKEND - ARCHITECTURE
+================================================================================
+
+                              FRONTEND (React)
+                                    |
+                    HTTP REST + WebSocket (STOMP)
+                                    |
+                    +---------------+---------------+
+                    |                               |
+         ┌──────────▼─────────┐        ┌──────────▼─────────┐
+         │    REST API        │        │   WebSocket        │
+         │   (HTTP/JSON)      │        │  (STOMP/SockJS)    │
+         └──────────┬─────────┘        └──────────┬─────────┘
+                    │                               │
+            Controllers Layer:                      │
+         ┌──────────┴──────────────────────────────┴──────────┐
+         │                                                    │
+    RoomController                          WebSocketGameController
+    ├─ POST /api/rooms                       ├─ /app/game/{id}/play-card
+    ├─ GET /api/rooms/{code}                 ├─ /app/game/{id}/draw-card
+    ├─ POST /api/rooms/{code}/join           ├─ /app/game/{id}/call-uno
+    ├─ POST /api/rooms/{code}/start          └─ /app/game/{id}/chat
+    └─ POST /api/rooms/{code}/bot            
+                                             Broadcasts to:
+    GameController                           ├─ /topic/game/{sessionId}
+    ├─ POST /api/game/{id}/play              ├─ /topic/room/{roomCode}
+    ├─ POST /api/game/{id}/draw              └─ /topic/lobby
+    └─ POST /api/game/{id}/uno
+                                             Point-to-point:
+                                             └─ /user/{playerId}/queue/notification
+
+         └──────────┬────────────────────────────────────────┘
+                    │
+                    │
+            Services Layer:
+         ┌──────────▼─────────────────────────┐
+         │        GameManager                  │
+         │        (Singleton Pattern)          │
+         │                                    │
+         │  activeSessions: ConcurrentHashMap │
+         │  activeRooms: ConcurrentHashMap    │
+         │                                    │
+         │  ├─ createRoom(room)               │
+         │  ├─ startGameSession(session)      │
+         │  ├─ getRoom(code)                  │
+         │  └─ getSession(id)                 │
+         └──────────┬──────┬──────┬──────────┘
+                    │      │      │
+         ┌──────────▼──┐ ┌─▼────┐┌─▼──────────┐
+         │  RoomManager│ │GameEn│WebSocketObs│
+         │             │ │gine  │erver       │
+         │ ├─createRoom│ │      │            │
+         │ ├─joinRoom  │ │   ├─ │onPlayerJoin│
+         │ ├─addBot    │ │   ├─ │onCardPlay  │
+         │ ├─kickPlayer│ │   ├─ │onGameStart │
+         │ └─leaveRoom │ │   ├─ │onTurnChange│
+         └─────────────┘ │   └─ │onGameEnded │
+                         └────┘ └────────────┘
+
+         └──────────┬──────────────────────────────────┘
+                    │
+                    │
+          Domain Models Layer (In-Memory):
+         ┌──────────▼────────────────────────────────┐
+         │                                           │
+      Room                      GameSession          │
+      ├─ roomCode (6-char)      ├─ sessionId         │
+      ├─ roomLeader: Player     ├─ room: Room        │
+      ├─ players: [Player]      ├─ turnOrder: [Plr]  │
+      ├─ bots: [BotPlayer]      ├─ mainDeck: Deck    │
+      ├─ gameSession: GS        ├─ currentPlayer     │
+      ├─ config: GameConfig     ├─ currentState      │
+      └─ status: RoomStatus     └─ discardPile: []   │
+                                                     │
+      Player                   Card (Hierarchy)      │
+      ├─ playerId             ├─ NumberCard         │
+      ├─ userEmail            ├─ ActionCard         │
+      ├─ nickname             │  ├─ SkipCard        │
+      ├─ hand: [Card]         │  ├─ ReverseCard     │
+      ├─ score: int           │  └─ DrawTwoCard     │
+      └─ connected: bool      ├─ WildCard           │
+                              └─ WildDrawFourCard   │
+      BotPlayer extends Player                      │
+      ├─ temporary: bool      Deck                  │
+      └─ chooseCard()         ├─ cards: List        │
+         shouldCallOne()      └─ discard: Stack     │
+         chooseColor()                              │
+         executeTurn()        GameConfiguration     │
+                              ├─ maxPlayers         │
+                              ├─ initialCardCount   │
+                              ├─ turnTimeLimit      │
+                              └─ pointsToWin        │
+         └──────────┬──────────────────────────────┘
+                    │
+                    │
+          Repository/Database Layer (JPA):
+         ┌──────────▼────────────────────────────────┐
+         │                                           │
+         │  UserRepository ──▶ User Entity           │
+         │                    ├─ id, email           │
+         │                    ├─ username, password  │
+         │                    └─ created_at          │
+         │                                           │
+         │  JPA Relations:                           │
+         │    User ──┬──▶ GameHistory (1:many)      │
+         │           ├──▶ PlayerStats (1:1)         │
+         │           └──▶ GlobalRanking (1:1)       │
+         │                                           │
+         └──────────┬────────────────────────────────┘
+                    │
+                    │
+          ┌─────────▼──────────────┐
+          │   PostgreSQL Database  │
+          │                        │
+          │  - user               │
+          │  - game_history       │
+          │  - player_stats       │
+          │  - global_ranking     │
+          │                        │
+          │  (In-memory NOT here:) │
+          │  - Room               │
+          │  - GameSession        │
+          │  - Player             │
+          │  - Card               │
+          └────────────────────────┘
+
+================================================================================
+                          DATA FLOW: START GAME
+================================================================================
+
+User clicks "Start Game"
+         │
+         ▼
+┌─────────────────────────────────┐
+│ POST /api/rooms/{code}/start    │
+│ Authorization: Bearer {JWT}     │
+└─────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ RoomController.startGame()      │
+│ 1. Verify caller is leader      │
+│ 2. Validate 2+ players          │
+└─────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ Create GameSession              │
+│ session = GameSession.builder()  │
+│          .room(room)             │
+│          .build()                │
+└─────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ GameManager.startGameSession()  │
+│ activeSessions.put(sessionId)   │
+└─────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ session.start() ← CRITICAL!     │
+│                                  │
+│ 1. Initialize mainDeck (108)    │
+│ 2. Shuffle deck                 │
+│ 3. Deal cards to each player:   │
+│    for (Player p : getAllPlayers)│
+│      p.drawCard() × 7           │
+│ 4. Setup turnOrder              │
+│ 5. Place first card             │
+│ 6. Set currentPlayer            │
+│ 7. currentState = PLAYING       │
+└─────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ room.setStatus(IN_PROGRESS)     │
+│ room.setGameSession(session)    │
+└─────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ Return Response:                │
+│ {                               │
+│   sessionId: "uuid",            │
+│   roomCode: "ABC123",           │
+│   status: "STARTED"             │
+│ }                               │
+└─────────────────────────────────┘
+         │
+         ▼
+    ⚠️ MISSING: NO WEBSOCKET BROADCAST!
+    ⚠️ Clients don't know game started
+    ⚠️ Hand data not synchronized
+
+    SOLUTION:
+    webSocketObserver.onGameStarted(session)
+         │
+         ▼
+    Broadcast to /topic/game/{sessionId}:
+    {
+      "eventType": "GAME_STARTED",
+      "data": {
+        "sessionId": "...",
+        "startingPlayer": "...",
+        "direction": "CLOCKWISE",
+        "players": [...]
+      }
+    }
+
+================================================================================
+                    WEBSOCKET MESSAGE FLOW
+================================================================================
+
+                            CLIENTS
+                    (Subscribed to topics)
+                              │
+                 ┌────────────┼────────────┐
+                 │            │            │
+            ┌────▼────┐  ┌───▼───┐  ┌───▼──┐
+            │ Player1 │  │Player2│  │Bot_1 │
+            └────┬────┘  └───┬───┘  └───┬──┘
+                 │           │         │
+        Send to: │           │         │
+        /app/game/{id}/      │         │
+        play-card            │         │
+                 │           │         │
+                 └───────────┼─────────┘
+                             │
+                             ▼
+                  WebSocketGameController
+                  .handlePlayCard()
+                             │
+                    Game Logic Execution:
+                    1. Find player
+                    2. Find card
+                    3. gameEngine.processMove()
+                    4. Update game state
+                             │
+                             ▼
+                  Build GameStateResponse
+                  (no hand info)
+                             │
+                             ▼
+                  broadcast to @SendTo
+                  /topic/game/{sessionId}
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+    ┌───▼────┐           ┌──▼──┐             ┌──▼──┐
+    │ Player1│           │Plyr2│             │Bot_1│
+    │receives│           │rcvs │             │rcvs │
+    │update  │           │upd  │             │upd  │
+    └────────┘           └─────┘             └─────┘
+
+    Each player sees:
+    {
+      "sessionId": "...",
+      "currentPlayerId": "next-player-id",
+      "topCard": { ... },
+      "players": [ { playerId, nickname, cardCount, ... } ],
+      "deckSize": 88,
+      "discardPileSize": 2,
+      // Note: hand NOT included (good!)
+    }
+
+================================================================================
+                      DESIGN PATTERNS USED
+================================================================================
+
+Pattern          │ Class                  │ Purpose
+─────────────────┼────────────────────────┼──────────────────────────
+Singleton        │ GameManager            │ Single room/session store
+Builder          │ RoomBuilder            │ Complex Room creation
+                 │ GameConfigBuilder      │
+Factory          │ CardFactory            │ Card instantiation
+                 │ BotFactory             │
+Observer         │ GameObserver (iface)   │ Decouple game from notify
+                 │ WebSocketObserver      │
+Command          │ PlayCardCommand        │ Move history for undo
+State            │ GameState              │ Game state transitions
+Strategy         │ BotStrategy            │ Different AI behaviors
+Adapter          │ BotPlayerAdapter       │ Interface adaptation
+Decorator        │ CardDecorator          │ Add card abilities
+                 │ PowerUpDecorator       │
+Prototype        │ GameStatePrototype     │ Copy game state
+
+================================================================================
