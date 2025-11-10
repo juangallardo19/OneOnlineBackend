@@ -143,14 +143,22 @@ public class WebSocketObserver implements GameObserver {
 
     /**
      * Game started - notify all players.
+     * Sends to BOTH room topic (for players still in waiting room)
+     * AND game topic (for game updates).
      */
     @Override
     public void onGameStarted(GameSession session) {
         Map<String, Object> event = createEvent("GAME_STARTED", Map.of(
                 "sessionId", session.getSessionId(),
                 "startingPlayer", session.getCurrentPlayer().getPlayerId(),
-                "direction", session.isClockwise() ? "CLOCKWISE" : "COUNTER_CLOCKWISE"
+                "direction", session.isClockwise() ? "CLOCKWISE" : "COUNTER_CLOCKWISE",
+                "roomCode", session.getRoom().getRoomCode()
         ));
+
+        // Send to room topic first (for players in waiting room)
+        sendToRoom(session.getRoom().getRoomCode(), event);
+
+        // Then send to game topic (for future game updates)
         sendToGame(session.getSessionId(), event);
     }
 

@@ -9,6 +9,7 @@ import com.oneonline.backend.model.domain.GameConfiguration;
 import com.oneonline.backend.model.domain.GameSession;
 import com.oneonline.backend.model.domain.Player;
 import com.oneonline.backend.model.domain.Room;
+import com.oneonline.backend.pattern.behavioral.observer.WebSocketObserver;
 import com.oneonline.backend.pattern.creational.builder.GameConfigBuilder;
 import com.oneonline.backend.service.game.GameManager;
 import com.oneonline.backend.service.game.RoomManager;
@@ -58,6 +59,7 @@ import java.util.stream.Collectors;
 public class RoomController {
 
     private final RoomManager roomManager;
+    private final WebSocketObserver webSocketObserver;
 
     /**
      * Create a new game room
@@ -429,6 +431,11 @@ public class RoomController {
             room.setGameSession(session);
 
             log.info("Game started for room {}, session ID: {}", code, session.getSessionId());
+
+            // ⚠️ CRITICAL FIX: Notify all players via WebSocket that game has started
+            webSocketObserver.onGameStarted(session);
+
+            log.info("Game start notification sent to all players in session {}", session.getSessionId());
 
             // Return session info so frontend knows the sessionId
             Map<String, Object> response = new HashMap<>();
