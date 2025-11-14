@@ -154,6 +154,31 @@ public class RoomController {
     }
 
     /**
+     * Get current room for the authenticated user
+     *
+     * GET /api/rooms/current
+     *
+     * Returns the room the user is currently in (if any).
+     * Useful for reconnecting after page reload.
+     *
+     * @param authentication Current user
+     * @return Room if user is in one, 404 otherwise
+     */
+    @GetMapping("/current")
+    public ResponseEntity<RoomResponse> getCurrentRoom(Authentication authentication) {
+        log.debug("Fetching current room for user: {}", authentication.getName());
+
+        Optional<Room> currentRoom = GameManager.getInstance().findUserCurrentRoom(authentication.getName());
+
+        if (currentRoom.isPresent()) {
+            RoomResponse response = mapToRoomResponse(currentRoom.get());
+            return ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    /**
      * Join an existing room
      *
      * POST /api/rooms/{code}/join
@@ -373,6 +398,42 @@ public class RoomController {
     }
 
     /**
+     * Toggle room privacy (public <-> private)
+     *
+     * PUT /api/rooms/{code}/privacy
+     *
+     * Only the room leader can change room privacy.
+     *
+     * @param code Room code
+     * @param authentication Current user (must be leader)
+     * @return Updated room
+     */
+    @PutMapping("/{code}/privacy")
+    public ResponseEntity<RoomResponse> toggleRoomPrivacy(
+            @PathVariable String code,
+            Authentication authentication) {
+
+        log.info("Toggle privacy request for room {} by {}", code, authentication.getName());
+
+        Room room = roomManager.findRoom(code)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + code));
+
+        // Verify caller is leader
+        if (!room.getLeader().getUserEmail().equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(null);
+        }
+
+        // Toggle privacy
+        room.setPrivate(!room.isPrivate());
+
+        log.info("Room {} privacy changed to: {}", code, room.isPrivate() ? "PRIVATE" : "PUBLIC");
+
+        RoomResponse response = mapToRoomResponse(room);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Get room details
      *
      * GET /api/rooms/{code}
@@ -417,6 +478,20 @@ public class RoomController {
         if (!room.getLeader().getUserEmail().equals(authentication.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only room leader can start the game");
+        }
+
+        // CRITICAL: Prevent multiple game starts - check if game already started
+        if (room.getStatus() == com.oneonline.backend.model.enums.RoomStatus.IN_PROGRESS) {
+            log.warn("⚠️ [RoomController] Game already in progress for room {}", code);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Game already started");
+        }
+
+        // CRITICAL: Check if room already has a game session
+        if (room.getGameSession() != null) {
+            log.warn("⚠️ [RoomController] Room {} already has an active game session", code);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Game session already exists");
         }
 
         // Validate minimum players
