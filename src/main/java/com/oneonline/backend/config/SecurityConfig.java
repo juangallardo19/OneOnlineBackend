@@ -78,8 +78,7 @@ public class SecurityConfig {
                     "/actuator/health",       // Health check
                     "/api/ranking/global",    // Public global ranking
                     "/api/ranking/initialize", // Public initialization endpoint
-                    "/api/ranking/stats",      // Public ranking stats
-                    "/api/rooms/**/beacon-leave" // sendBeacon leave endpoint (validates token manually)
+                    "/api/ranking/stats"      // Public ranking stats
                 ).permitAll()
 
                 // Protected endpoints - JWT required
