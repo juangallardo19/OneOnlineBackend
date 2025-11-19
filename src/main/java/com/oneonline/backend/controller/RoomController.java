@@ -62,7 +62,6 @@ public class RoomController {
     private final UserRepository userRepository;
     private final com.oneonline.backend.pattern.behavioral.observer.WebSocketObserver webSocketObserver;
     private final SimpMessagingTemplate messagingTemplate;
-    private final com.oneonline.backend.service.auth.JwtService jwtService;
 
     /**
      * Create a new game room
@@ -262,123 +261,6 @@ public class RoomController {
             return ResponseEntity.ok("Room closed");
         }
 
-        RoomResponse response = mapToRoomResponse(updatedRoom);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Leave a room (POST version for sendBeacon compatibility)
-     *
-     * POST /api/rooms/{code}/leave
-     *
-     * This is identical to the DELETE endpoint but uses POST method
-     * to be compatible with navigator.sendBeacon() which only supports POST.
-     * This is used when the page is closing/reloading to ensure the request completes.
-     *
-     * @param code Room code
-     * @param authentication Current user
-     * @return Success message or updated room
-     */
-    @PostMapping("/{code}/leave")
-    public ResponseEntity<?> leaveRoomPost(
-            @PathVariable String code,
-            Authentication authentication) {
-
-        log.info("[sendBeacon] User {} leaving room {} (POST method)", authentication.getName(), code);
-
-        // Find player in room
-        Room room = roomManager.findRoom(code)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + code));
-
-        Player player = room.getPlayers().stream()
-                .filter(p -> p.getNickname().equals(authentication.getName()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Player not in room"));
-
-        // Leave room
-        Room updatedRoom = roomManager.leaveRoom(code, player);
-
-        if (updatedRoom == null) {
-            // Room closed
-            log.info("[sendBeacon] Room {} closed after user {} left", code, authentication.getName());
-            return ResponseEntity.ok("Room closed");
-        }
-
-        log.info("[sendBeacon] User {} successfully left room {}", authentication.getName(), code);
-        RoomResponse response = mapToRoomResponse(updatedRoom);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Leave room via sendBeacon (no Spring Security authentication)
-     *
-     * POST /api/rooms/{code}/beacon-leave?token=xxx
-     *
-     * This endpoint is specifically designed for navigator.sendBeacon() which cannot
-     * send custom headers (like Authorization: Bearer). Instead, it receives the JWT
-     * token as a query parameter and validates it manually.
-     *
-     * IMPORTANT: This endpoint is public (permitAll in SecurityConfig) but validates
-     * the token manually before processing the request.
-     *
-     * Used when the page is closing/reloading to ensure the user leaves the room
-     * even if the browser cancels the request.
-     *
-     * @param code Room code
-     * @param token JWT token (query parameter)
-     * @return Success message or updated room
-     */
-    @PostMapping("/{code}/beacon-leave")
-    public ResponseEntity<?> beaconLeaveRoom(
-            @PathVariable String code,
-            @RequestParam(required = false) String token) {
-
-        log.info("🚪 [beacon-leave] Received leave request for room: {}", code);
-
-        // Validate token parameter
-        if (token == null || token.trim().isEmpty()) {
-            log.warn("❌ [beacon-leave] No token provided");
-            return ResponseEntity.status(401).body("Unauthorized: No token provided");
-        }
-
-        // Validate JWT token
-        if (!jwtService.validateToken(token)) {
-            log.warn("❌ [beacon-leave] Invalid or expired token");
-            return ResponseEntity.status(401).body("Unauthorized: Invalid or expired token");
-        }
-
-        // Extract email from token
-        String userEmail = jwtService.getEmailFromToken(token);
-        log.info("✅ [beacon-leave] Valid token for user: {}", userEmail);
-
-        // Find room
-        Room room = roomManager.findRoom(code)
-                .orElseThrow(() -> {
-                    log.warn("❌ [beacon-leave] Room not found: {}", code);
-                    return new IllegalArgumentException("Room not found: " + code);
-                });
-
-        // Find player in room by email
-        Player player = room.getPlayers().stream()
-                .filter(p -> p.getNickname().equals(userEmail))
-                .findFirst()
-                .orElseThrow(() -> {
-                    log.warn("❌ [beacon-leave] User {} not found in room {}", userEmail, code);
-                    return new IllegalArgumentException("Player not in room");
-                });
-
-        log.info("🚪 [beacon-leave] User {} leaving room {} via sendBeacon", userEmail, code);
-
-        // Leave room
-        Room updatedRoom = roomManager.leaveRoom(code, player);
-
-        if (updatedRoom == null) {
-            // Room closed
-            log.info("✅ [beacon-leave] Room {} closed after user {} left", code, userEmail);
-            return ResponseEntity.ok("Room closed");
-        }
-
-        log.info("✅ [beacon-leave] User {} successfully left room {}", userEmail, code);
         RoomResponse response = mapToRoomResponse(updatedRoom);
         return ResponseEntity.ok(response);
     }
