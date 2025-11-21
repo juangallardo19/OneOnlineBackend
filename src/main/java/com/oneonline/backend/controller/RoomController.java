@@ -843,7 +843,7 @@ public class RoomController {
                 .stackingCount(stackingCount)  // NEW: Number of stacked draw cards
                 .turnOrder(session.getPlayers().stream()
                         .map(Player::getPlayerId)
-                        collect(Collectors.toList()))
+                        .collect(Collectors.toList()))
                 .startedAt(System.currentTimeMillis())
                 .build();
     }
