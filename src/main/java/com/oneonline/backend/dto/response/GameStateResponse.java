@@ -1,3 +1,4 @@
+
 package com.oneonline.backend.dto.response;
 
 import lombok.AllArgsConstructor;
@@ -61,16 +62,6 @@ public class GameStateResponse {
     private Integer deckSize;
 
     /**
-     * Number of cards in discard pile.
-     */
-    private Integer discardPileSize;
-
-    /**
-     * Play direction (CLOCKWISE, COUNTER_CLOCKWISE).
-     */
-    private String direction;
-
-    /**
      * Number of cards pending to draw (Draw Two/Four effect).
      */
     private Integer pendingDrawCount;
@@ -114,6 +105,18 @@ public class GameStateResponse {
      * Final scores (if game over).
      */
     private Map<String, Integer> finalScores;
+
+    /**
+     * IDs of cards that the current player can play.
+     * This list is calculated server-side to ensure consistency.
+     */
+    private List<String> playableCardIds;
+
+    /**
+     * Number of stacked draw cards (+2/+4).
+     * Used for stacking logic where players can stack draw cards.
+     */
+    private Integer stackingCount;
 
     /**
      * Card information nested DTO.
