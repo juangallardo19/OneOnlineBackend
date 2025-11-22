@@ -117,6 +117,9 @@ public class TurnManager {
      *
      * Advances turn twice, effectively skipping one player.
      *
+     * In 2-player games: A plays SKIP → skip B → back to A (A plays again)
+     * In 3+ player games: A plays SKIP → skip B → C plays next
+     *
      * @return Player whose turn it is after skip
      */
     public Player skipNextPlayer() {
